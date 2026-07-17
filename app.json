@@ -19,7 +19,7 @@
     },
     "android": {
       "package": "com.capbatu.profilekpunimus",
-      "googleServicesFile": "./google-services.json",
+      "googleServicesFile": "${GOOGLE_SERVICES_JSON}",
       "permissions": [
         "INTERNET",
         "NOTIFICATIONS"
