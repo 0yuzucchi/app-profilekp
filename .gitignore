@@ -44,4 +44,3 @@ yarn-error.*
 
 # Firebase Admin SDK
 *-firebase-adminsdk-*.json
-google-services.json

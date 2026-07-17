@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "471506657072",
+    "project_id": "profile-klinik-pratama",
+    "storage_bucket": "profile-klinik-pratama.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:471506657072:android:b0fe1df30105c2f5e072f5",
+        "android_client_info": {
+          "package_name": "com.capbatu.profilekpunimus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvWUS01CUvWUkjA49_lZzLJTfZIopS-_o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
