@@ -222,10 +222,10 @@ const stripHtml = (htmlString) => {
 const extractAmenities = (content) => {
   if (!content) return [];
   try {
-      let parsed = typeof content === 'string' ? JSON.parse(content) : content;
-      if (Array.isArray(parsed)) {
-          return parsed.map(item => (typeof item === 'object' ? item.item : item)).filter(Boolean);
-      }
+    let parsed = typeof content === 'string' ? JSON.parse(content) : content;
+    if (Array.isArray(parsed)) {
+      return parsed.map(item => (typeof item === 'object' ? item.item : item)).filter(Boolean);
+    }
   } catch (e) { return []; }
   return [];
 };
@@ -275,14 +275,14 @@ const handleMapPress = async (link, address) => {
     await Linking.openURL(webUrl);
   } catch (err) {
     const nativeUrl = Platform.OS === 'ios' ? `maps://0,0?q=${query}` : `geo:0,0?q=${query}`;
-    Linking.openURL(nativeUrl).catch(() => {});
+    Linking.openURL(nativeUrl).catch(() => { });
   }
 };
 
 const SectionTitle = React.memo(({ title }) => (
   <View style={tw`items-center mb-6 mt-4 w-full`}>
-    <Text 
-      numberOfLines={1} 
+    <Text
+      numberOfLines={1}
       style={tw`text-xl font-black text-black tracking-widest uppercase text-center`}
     >
       {title}
@@ -312,7 +312,7 @@ const Home = () => {
   const [activeService, setActiveService] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const modalAnim = useRef(new Animated.Value(0)).current;
-  
+
   const scrollAnim = useRef(new Animated.Value(0)).current;
 
   // --- RE-PARSING DATA DENGAN MEMOIZATION ---
@@ -359,11 +359,11 @@ const Home = () => {
   };
 
   const hasNetworkError = useMemo(() => {
-    return isNetworkError(errorServices) || 
-           isNetworkError(errorFacPerawatan) || 
-           isNetworkError(errorFacPenunjang) || 
-           isNetworkError(errorAnnouncements) || 
-           isNetworkError(errorContact);
+    return isNetworkError(errorServices) ||
+      isNetworkError(errorFacPerawatan) ||
+      isNetworkError(errorFacPenunjang) ||
+      isNetworkError(errorAnnouncements) ||
+      isNetworkError(errorContact);
   }, [errorServices, errorFacPerawatan, errorFacPenunjang, errorAnnouncements, errorContact]);
 
   const hasAnyData = services.length > 0 || facilities.length > 0 || announcements.length > 0 || contact !== null;
@@ -384,19 +384,19 @@ const Home = () => {
   const getSocialLinkByPlatform = useCallback((platformName) => {
     const list = parseSocialMedia(activeContact.socialMedia);
     const found = list.find(item => item.platform && item.platform.toLowerCase() === platformName.toLowerCase());
-    
+
     if (found && found.link) {
       let cleanLink = found.link.trim().replace(/^[",'\s]+|[",'\s]+$/g, '');
       if (cleanLink !== '' && cleanLink !== ',') return cleanLink;
     }
-    
+
     const defaultLinks = {
       'facebook': 'https://www.facebook.com/profile.php?id=100083638056092',
       'instagram': 'https://www.instagram.com/klinikpratamaunimus_official',
       'tiktok': 'http://tiktok.com/@klinik.unimus',
       'youtube': 'https://www.youtube.com'
     };
-    
+
     return defaultLinks[platformName.toLowerCase()] || null;
   }, [activeContact.socialMedia]);
 
@@ -412,9 +412,9 @@ const Home = () => {
         nextIndex = 0;
       }
 
-      scrollViewRef.current?.scrollTo({ 
-        x: nextIndex * width, 
-        animated: true 
+      scrollViewRef.current?.scrollTo({
+        x: nextIndex * width,
+        animated: true
       });
 
       setActiveSlideIndex(nextIndex);
@@ -443,7 +443,7 @@ const Home = () => {
     setModalVisible(true);
     Animated.spring(modalAnim, { toValue: 1, tension: 65, friction: 10, useNativeDriver: true }).start();
   }, [modalAnim]);
-  
+
   const closeModal = useCallback(() => {
     Animated.timing(modalAnim, { toValue: 0, duration: 250, useNativeDriver: true }).start(() => {
       setModalVisible(false);
@@ -483,7 +483,7 @@ const Home = () => {
         {showServicesSkeleton ? (
           <CarouselSkeleton width={width} />
         ) : (
-          <View style={tw`relative w-full h-[220px]`}> 
+          <View style={tw`relative w-full h-[220px]`}>
             <Animated.ScrollView
               ref={scrollViewRef}
               horizontal
@@ -500,13 +500,13 @@ const Home = () => {
             >
               {displayServices.map((item, index) => {
                 const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
-                
+
                 const textOpacity = scrollX.interpolate({
                   inputRange,
                   outputRange: [0, 1, 0],
                   extrapolate: 'clamp',
                 });
-                
+
                 const textTranslateY = scrollX.interpolate({
                   inputRange,
                   outputRange: [20, 0, 20],
@@ -514,10 +514,10 @@ const Home = () => {
                 });
 
                 return (
-                  <Pressable 
-                    key={item.id || index} 
+                  <Pressable
+                    key={item.id || index}
                     onPress={() => openModal(item)}
-                    style={{ width, height: 220 }} 
+                    style={{ width, height: 220 }}
                   >
                     {/* OPTIMALISASI: Mengganti ImageBackground dengan Image (expo-image) + Absolute View */}
                     <View style={tw`w-full h-full relative`}>
@@ -533,10 +533,10 @@ const Home = () => {
                         end={{ x: 1, y: 0 }}
                         style={StyleSheet.absoluteFillObject}
                       />
-                      
+
                       <View style={tw`flex-1 px-6 pt-4 pb-10 justify-between z-10`}>
                         <Text style={tw`text-white text-xl font-black tracking-widest`}>LAYANAN UNGGULAN</Text>
-                        
+
                         <Animated.View style={{ opacity: textOpacity, transform: [{ translateY: textTranslateY }] }}>
                           <Text style={tw`text-white text-lg font-bold mb-1`} numberOfLines={1}>
                             {item.title}
@@ -554,26 +554,26 @@ const Home = () => {
 
             <View style={tw`absolute bottom-3 w-full flex-row justify-center items-center gap-2 pointer-events-none`}>
               {displayServices.map((_, i) => {
-                 const inputRange = [(i - 1) * width, i * width, (i + 1) * width];
-                 
-                 const dotWidth = scrollX.interpolate({
-                   inputRange,
-                   outputRange: [8, 28, 8],
-                   extrapolate: 'clamp',
-                 });
-                 
-                 const dotOpacity = scrollX.interpolate({
-                   inputRange,
-                   outputRange: [0.5, 1, 0.5],
-                   extrapolate: 'clamp',
-                 });
+                const inputRange = [(i - 1) * width, i * width, (i + 1) * width];
 
-                 return (
-                   <Animated.View 
-                     key={i} 
-                     style={[tw`h-1.5 bg-white rounded-full`, { width: dotWidth, opacity: dotOpacity }]} 
-                   />
-                 );
+                const dotWidth = scrollX.interpolate({
+                  inputRange,
+                  outputRange: [8, 28, 8],
+                  extrapolate: 'clamp',
+                });
+
+                const dotOpacity = scrollX.interpolate({
+                  inputRange,
+                  outputRange: [0.5, 1, 0.5],
+                  extrapolate: 'clamp',
+                });
+
+                return (
+                  <Animated.View
+                    key={i}
+                    style={[tw`h-1.5 bg-white rounded-full`, { width: dotWidth, opacity: dotOpacity }]}
+                  />
+                );
               })}
             </View>
           </View>
@@ -590,16 +590,16 @@ const Home = () => {
               displayFacilities.slice(0, 4).map((item, index) => {
                 const amenities = extractAmenities(item.content);
                 const rawFeatures = amenities.length > 0 ? amenities : ['Fasilitas 1', 'Fasilitas 2', 'Fasilitas 3'];
-                
+
                 const sortedFeatures = [...rawFeatures].sort((a, b) => a.length - b.length);
                 const featuresToDisplay = sortedFeatures.slice(0, 4);
 
                 return (
                   <View key={item.id || index} style={tw`bg-white rounded-[28px] w-72 mr-6 shadow-md border border-gray-100`}>
                     <View style={tw`relative rounded-t-[28px] overflow-hidden bg-gray-100`}>
-                      <Image 
-                        source={{ uri: item.image_path || item.image_url || DUMMY_IMAGE }} 
-                        style={tw`w-full h-44`} 
+                      <Image
+                        source={{ uri: item.image_path || item.image_url || DUMMY_IMAGE }}
+                        style={tw`w-full h-44`}
                         contentFit="cover"
                         transition={200}
                       />
@@ -617,17 +617,17 @@ const Home = () => {
                       <Text style={tw`text-gray-400 font-bold text-[10px] tracking-widest uppercase mb-4`}>
                         FASILITAS TERSEDIA
                       </Text>
-                      
+
                       <View style={tw`flex-row flex-wrap justify-between`}>
                         {featuresToDisplay.map((feat, idx) => (
-                          <View 
-                            key={idx} 
+                          <View
+                            key={idx}
                             style={tw`w-[48%] flex-row items-center bg-[#F0FDF4] border border-emerald-100/80 px-2.5 py-1.5 rounded-full mb-2 shadow-sm`}
                           >
                             <Ionicons name="checkmark-circle" size={14} color={MAIN_GREEN} style={tw`mr-1`} />
-                            
-                            <Text 
-                              style={tw`text-[10px] text-[#0A5C36] font-bold flex-1`} 
+
+                            <Text
+                              style={tw`text-[10px] text-[#0A5C36] font-bold flex-1`}
                               numberOfLines={1}
                               ellipsizeMode="tail"
                             >
@@ -646,7 +646,7 @@ const Home = () => {
 
         {/* === PENGUMUMAN TERKINI / SKELETON === */}
         <View style={tw`py-5 bg-[#E6F9EE]`}>
-          
+
           <View style={tw`items-center mb-6`}>
             <Text style={tw`text-lg font-black text-teal-950 tracking-widest`}>PENGUMUMAN TERKINI</Text>
             <View style={tw`h-[4px] w-24 bg-[#009B4C] mt-2 rounded-full`} />
@@ -662,13 +662,13 @@ const Home = () => {
                 const detailHref = item.slug ? `/notifications/${item.slug}` : '/notifications';
 
                 return (
-                  <View 
-                    key={item.id || index} 
+                  <View
+                    key={item.id || index}
                     style={tw`relative w-72 h-44 mr-4 rounded-tl-[68px] rounded-bl-[20px] rounded-br-[68px] overflow-hidden border border-emerald-100/60 shadow-md mb-2 bg-gray-100`}
                   >
-                    <Image 
-                      source={{ uri: imageSource }} 
-                      style={tw`w-full h-full bg-gray-100`} 
+                    <Image
+                      source={{ uri: imageSource }}
+                      style={tw`w-full h-full bg-gray-100`}
                       contentFit="cover"
                       transition={200}
                     />
@@ -731,18 +731,18 @@ const Home = () => {
 
         {/* === KERJA SAMA === */}
         <View style={tw` bg-[#E6F9EE] relative overflow-hidden`}>
-          <View 
+          <View
             style={[
               tw`absolute -top-16 -right-16 w-42 h-42 rounded-full border-[18px] border-[${MAIN_GREEN}] opacity-95`,
               { backgroundColor: 'transparent' }
-            ]} 
+            ]}
           />
           <View style={tw`absolute -bottom-14 -left-14 w-28 h-28 bg-[${MAIN_GREEN}] rotate-45 opacity-95`} />
           <View style={tw`absolute -bottom-18 -left-18 w-32 h-32 border-[8px] border-[${MAIN_GREEN}]/40 rotate-45`} />
 
           <View style={tw`z-10`}>
             <SectionTitle title="KERJA SAMA" />
-            
+
             <View style={tw`items-center px-4`}>
               <View style={tw`flex-row justify-center items-center gap-x-10 mb-8`}>
                 {PARTNERS_DATA.slice(0, 3).map((partner) => (
@@ -782,12 +782,12 @@ const Home = () => {
             <ContactSkeleton />
           ) : (
             <View style={tw`flex-row justify-between items-stretch`}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 activeOpacity={0.9}
                 onPress={() => handleMapPress(activeContact.googleMapsLink, activeContact.address)}
                 style={tw`w-[44%] h-80 rounded-[30px] overflow-hidden shadow-md border-2 border-gray-50`}
               >
-                <Image 
+                <Image
                   source={{ uri: 'https://static-maps.yandex.ru/1.x/?ll=110.4194605,-6.9677168&z=16&l=map&size=450,450&lang=en_US&pt=110.4194605,-6.9677168,pm2rdm' }}
                   style={tw`w-full h-full`}
                   contentFit="cover"
@@ -798,7 +798,7 @@ const Home = () => {
               <View style={tw`w-[1px] bg-gray-300 my-1`} />
 
               <View style={tw`w-[50%] flex-col justify-between py-2`}>
-                <TouchableOpacity 
+                <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={() => handleMapPress(activeContact.googleMapsLink, activeContact.address)}
                   style={tw`flex-row items-start`}
@@ -813,7 +813,7 @@ const Home = () => {
 
                 <View style={tw`h-[1px] w-full bg-gray-300`} />
 
-                <TouchableOpacity 
+                <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={() => openWhatsApp(activeContact.whatsappRegistration)}
                   style={tw`flex-row items-center`}
@@ -829,7 +829,7 @@ const Home = () => {
                   </View>
                 </TouchableOpacity>
 
-                <TouchableOpacity 
+                <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={() => openExternalUrl(`mailto:${emailString}`)}
                   style={tw`flex-row items-center`}
@@ -843,7 +843,7 @@ const Home = () => {
                   </View>
                 </TouchableOpacity>
 
-                <TouchableOpacity 
+                <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={() => openWhatsApp(activeContact.whatsappInformation)}
                   style={tw`flex-row items-center`}
@@ -864,7 +864,7 @@ const Home = () => {
                 <View>
                   <Text style={tw`text-[13px] font-bold text-gray-700 mb-3`}>Sosial Media</Text>
                   <View style={tw`flex-row gap-3`}>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       activeOpacity={0.7}
                       onPress={() => {
                         const link = getSocialLinkByPlatform('Facebook');
@@ -875,7 +875,7 @@ const Home = () => {
                       <FontAwesome5 name="facebook-f" size={14} color="white" />
                     </TouchableOpacity>
 
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       activeOpacity={0.7}
                       onPress={() => {
                         const link = getSocialLinkByPlatform('Instagram');
@@ -886,7 +886,7 @@ const Home = () => {
                       <Ionicons name="logo-instagram" size={16} color="white" />
                     </TouchableOpacity>
 
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       activeOpacity={0.7}
                       onPress={() => {
                         const link = getSocialLinkByPlatform('Tiktok');
@@ -897,7 +897,7 @@ const Home = () => {
                       <FontAwesome5 name="tiktok" size={14} color="white" />
                     </TouchableOpacity>
 
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       activeOpacity={0.7}
                       onPress={() => {
                         const link = getSocialLinkByPlatform('YouTube');
@@ -946,10 +946,10 @@ const Home = () => {
                     <Text style={tw`text-2xl text-emerald-700 font-extrabold mb-4 border-b border-gray-100 pb-3`}>
                       {activeService.title}
                     </Text>
-                    <RenderHTML 
-                      contentWidth={width - 80} 
-                      source={htmlSource} 
-                      tagsStyles={HTML_TAGS_STYLES} 
+                    <RenderHTML
+                      contentWidth={width - 80}
+                      source={htmlSource}
+                      tagsStyles={HTML_TAGS_STYLES}
                     />
                     <View style={tw`h-6`} />
                     <TouchableOpacity onPress={closeModal} activeOpacity={0.8} style={tw`bg-[#00A54F] py-4 rounded-2xl items-center shadow-md`}>
@@ -963,7 +963,7 @@ const Home = () => {
 
         </View>
       </Modal>
-      <FloatingAIButton /> 
+      <FloatingAIButton />
     </View>
   );
 };

@@ -1,5 +1,5 @@
 
-// // app/notifications/job/[id].jsx
+// app/notifications/job/[id].jsx
 // import React, { useState, useRef, useEffect } from 'react';
 // import {
 //     View,
@@ -82,7 +82,14 @@
 //         JSON.stringify(vacancy.requirements, null, 2)
 //     );
 
-//     const isClosed = !vacancy.is_open;
+//     // Logika Status: Memeriksa properti 'is_open' dari backend dengan dukungan berbagai tipe data.
+//     // Jika data lama di cache belum memiliki properti 'is_open', sistem akan beralih ke 'status'.
+//     const isOpen = (vacancy.is_open !== undefined && vacancy.is_open !== null)
+//         ? (vacancy.is_open === true || vacancy.is_open === 'true' || vacancy.is_open === 1 || vacancy.is_open === '1')
+//         : (vacancy.status === 'open');
+
+//     const isClosed = !isOpen;
+    
 //     const availableChannels = (vacancy.submission_channels || []).filter(ch =>
 //         ['email', 'whatsapp'].includes(ch.type) && ch.value
 //     );
@@ -340,7 +347,7 @@
 //         </View>
 //     );
 // }
-// app/notifications/job/[id].jsx
+
 import React, { useState, useRef, useEffect } from 'react';
 import {
     View,
@@ -355,8 +362,8 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import RenderHTML from 'react-native-render-html';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Image } from 'expo-image'; // Menggunakan expo-image untuk caching
+import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import tw from 'twrnc';
 
 // Import hook caching
@@ -401,7 +408,7 @@ export default function JobDetail() {
     // Loading State
     if (loading && !vacancy) return <JobDetailSkeleton />;
 
-    // Error State (Jika tidak ada data sama sekali)
+    // Error State
     if (error && !vacancy) {
         return (
             <View style={tw`flex-1 justify-center items-center bg-white p-10`}>
@@ -413,18 +420,6 @@ export default function JobDetail() {
 
     if (!vacancy) return null;
 
-    console.log(
-        'VACANCY:',
-        JSON.stringify(vacancy, null, 2)
-    );
-
-    console.log(
-        'REQUIREMENTS:',
-        JSON.stringify(vacancy.requirements, null, 2)
-    );
-
-    // Logika Status: Memeriksa properti 'is_open' dari backend dengan dukungan berbagai tipe data.
-    // Jika data lama di cache belum memiliki properti 'is_open', sistem akan beralih ke 'status'.
     const isOpen = (vacancy.is_open !== undefined && vacancy.is_open !== null)
         ? (vacancy.is_open === true || vacancy.is_open === 'true' || vacancy.is_open === 1 || vacancy.is_open === '1')
         : (vacancy.status === 'open');
@@ -435,21 +430,30 @@ export default function JobDetail() {
         ['email', 'whatsapp'].includes(ch.type) && ch.value
     );
 
-    const handleApply = (type, value) => {
+    // FUNGSI REDIRECT YANG TELAH DIPERBAIKI
+    const handleApply = async (type, value) => {
         if (isClosed) return;
         let url = '';
+        
         if (type === 'whatsapp') {
             const phone = value.replace(/\D/g, '');
-            url = `whatsapp://send?phone=${phone.startsWith('0') ? '62' + phone.slice(1) : phone}&text=Halo, saya ingin melamar pekerjaan ${vacancy.profession}`;
+            const formattedPhone = phone.startsWith('0') ? '62' + phone.slice(1) : phone;
+            const message = `Halo, saya ingin melamar pekerjaan ${vacancy.profession}`;
+            // Menggunakan HTTPS Link (wa.me) & encodeURIComponent agar aman dibaca native OS
+            url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
         } else if (type === 'email') {
-            url = `mailto:${value}?subject=Lamaran Pekerjaan: ${vacancy.profession}`;
+            const subject = `Lamaran Pekerjaan: ${vacancy.profession}`;
+            url = `mailto:${value}?subject=${encodeURIComponent(subject)}`;
         }
 
         if (url) {
-            Linking.canOpenURL(url).then(supported => {
-                if (supported) Linking.openURL(url);
-                else alert("Aplikasi tidak tersedia");
-            });
+            try {
+                // Langsung jalankan openURL tanpa canOpenURL agar tidak terblokir batasan sekuritas OS di rilis production
+                await Linking.openURL(url);
+            } catch (err) {
+                console.log("Error ketika membuka link lamaran:", err);
+                alert("Aplikasi tidak tersedia atau gagal membuka tautan.");
+            }
         }
     };
 
@@ -601,7 +605,7 @@ export default function JobDetail() {
                         </View>
                     )}
 
-                    {/* Poster Image (Optimized with expo-image) */}
+                    {/* Poster Image */}
                     <View style={tw`mt-4 shadow-xl`}>
                         <TouchableOpacity
                             activeOpacity={0.9}
